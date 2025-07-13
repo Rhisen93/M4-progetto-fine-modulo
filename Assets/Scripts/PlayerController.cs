@@ -6,6 +6,10 @@ public class PlayerController : MonoBehaviour
 {
 
     [SerializeField] float Speed = 5f;
+    [SerializeField] float jumpForce = 5f;
+    [SerializeField] float groundCheckDistance = 0.2f;
+    [SerializeField] LayerMask groundLayer;
+
     Rigidbody _rb;
     Camera mainCamera;
 
@@ -31,5 +35,27 @@ public class PlayerController : MonoBehaviour
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), 0.2f);
         }
-     }
+    }
+
+    void Update()
+    {
+        Jump();
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            Speed *= 4f;
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            Speed = 5f;
+        }
+    }
+
+    private void Jump()
+    {
+        if (Input.GetButtonDown("Jump"))
+        {
+            _rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
 }
