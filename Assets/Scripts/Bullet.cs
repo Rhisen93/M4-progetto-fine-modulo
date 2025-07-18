@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 10f;
-    public float damage = 10f;
-    public float lifetime = 5f;
+    public float _speed = 10f;
+    public float _damage = 10f;
+    public float _lifeTime = 5f;
 
     private Transform target;
 
@@ -20,7 +20,7 @@ public class Bullet : MonoBehaviour
         }
 
         // Distruggi il proiettile dopo un certo tempo
-        Destroy(gameObject, lifetime);
+        Destroy(gameObject, _lifeTime);
     }
 
     void Update()
@@ -28,22 +28,16 @@ public class Bullet : MonoBehaviour
         if (target == null) return;
 
         Vector3 direction = (target.position - transform.position).normalized;
-        transform.position += direction * speed * Time.deltaTime;
+        transform.position += direction * _speed * Time.deltaTime;
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player colpito!");
-
-            // Se vuoi infliggere danno:
-            /*
-            PlayerHealth hp = other.GetComponent<PlayerHealth>();
-            if (hp != null) hp.TakeDamage(damage);
-            */
-
             Destroy(gameObject);
         }
     }
+
+
 }
