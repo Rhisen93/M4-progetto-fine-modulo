@@ -1,38 +1,64 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+
 public class LifeController : MonoBehaviour
 {
-    [SerializeField] private int _maxHP = 5;
-    [SerializeField] private int _currentHP;
-
-    public UnityEvent onDeath;
-    public UnityEvent<float> onLifeChanged;
-
-    void Start()
+    [SerializeField] private int _hp = 10;
+    public int Hp
     {
-        _currentHP = _maxHP;
-        onLifeChanged?.Invoke(GetLifePercent());
+        get => _hp;
+        private set => _hp = Mathf.Max(0, Mathf.Abs(value));
     }
+    private int _hpMax = 10;
+    [SerializeField] private bool _hpMaxOnAwake = true;
 
-    public void ReduceLife(int amount)
+    [SerializeField] private UnityEvent<int, int> _onTakeDamage;
+
+    void Awake()
     {
-        _currentHP -= amount;
-        _currentHP = Mathf.Clamp(_currentHP, 0, _maxHP);
-
-        onLifeChanged?.Invoke(GetLifePercent());
-
-        if (_currentHP <= 0)
+        if (_hp <= 0 || _hpMaxOnAwake)
         {
-            Debug.Log("Player morto!");
-            onDeath?.Invoke();
+            _hp = _hpMax;
         }
     }
 
-    public float GetLifePercent()
+    void Start()
     {
-        return (float)_currentHP / _maxHP;
+        UIUpdate();
     }
+
+    public void TakeDamage(int damage)
+    {
+        _hp -= Mathf.Abs(damage);
+        UIUpdate();
+
+        if (!IsAlive())
+        {
+            Hp = 0;
+            DestroyCharacter();
+        }
+    }
+
+    public bool IsAlive() => _hp > 0;
+
+    private void DestroyCharacter()
+    {
+        Destroy(this.gameObject);
+        Debug.Log($"Il character {this.gameObject.name} è stato distrutto");
+    }
+
+    public void Cure()
+    {
+        _hp += Mathf.Abs(2);
+        UIUpdate();
+
+        if (_hp > _hpMax)
+        {
+            _hp = _hpMax;
+            Debug.Log($"Il character {this.gameObject.name} ha la vita al massimo");
+        }
+    }
+
+    private void UIUpdate() => _onTakeDamage.Invoke(_hp, _hpMax);
 }

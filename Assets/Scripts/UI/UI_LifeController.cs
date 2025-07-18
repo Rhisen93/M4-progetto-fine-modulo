@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_LifeBar : MonoBehaviour
+public class UI_LifeController : MonoBehaviour
 {
     [SerializeField] private Image _lifeBar;
     [SerializeField] private Gradient _gradient;
